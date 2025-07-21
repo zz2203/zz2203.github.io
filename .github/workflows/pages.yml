@@ -1,0 +1,37 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout
+
+      - name: 设置 Node.js
+        uses: actions/setup-node
+        with:
+          node-version: 24
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup
+        with:
+          version: 8
+
+      - name: 安装依赖
+        run: pnpm i
+
+      - name: 构建项目
+        run: pnpm build
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
