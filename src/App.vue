@@ -419,19 +419,19 @@ const drawMap = async () => {
       .attr("class", "province")
       .attr("d", path)
       .attr("fill", (d: any) => getProvinceColor(d.properties.name))
-      .attr("stroke", "#ffffff")
+      .attr("stroke", "#cccccc")
       .attr("stroke-width", 1.5)
       .style("cursor", "pointer")
       .on("mouseenter", debounce(function(this: SVGPathElement, event: any, d: any) {
         d3.select(this)
-          .attr("stroke", "#333333")
+          .attr("stroke", "#999999")
           .attr("stroke-width", 2)
         
         showEnhancedTooltip(event, d)
       }, 300))
       .on("mouseleave", function(this: SVGPathElement, event: any, d: any) {
         d3.select(this)
-          .attr("stroke", "#ffffff")
+          .attr("stroke", "#cccccc")
           .attr("stroke-width", 1.5)
         
         hideTooltip()
@@ -464,54 +464,7 @@ const drawMap = async () => {
         )
       })
 
-    // 添加学生数量标签
-    labelGroup.selectAll(".student-count-label")
-      .data(geoData.features)
-      .enter()
-      .append("text")
-      .attr("class", "student-count-label")
-      .attr("x", (d: any) => path.centroid(d)[0])
-      .attr("y", (d: any) => path.centroid(d)[1])
-      .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .attr("font-weight", "600")
-      .attr("fill", (d: any) => {
-        const studentProvinceName = mapProvinceNameToStudentData(d.properties.name)
-        const stats = provinceStats.get(studentProvinceName)
-        return stats && stats.count > 0 ? "#ffffff" : "#999999"
-      })
-      .text((d: any) => {
-        const studentProvinceName = mapProvinceNameToStudentData(d.properties.name)
-        const stats = provinceStats.get(studentProvinceName)
-        return stats && stats.count > 0 ? stats.count : ""
-      })
-      .style("pointer-events", "none")
-      .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
-      .style("opacity", 1)
 
-    // 添加省份名称标签（小字体，在数量下方）
-    labelGroup.selectAll(".province-name-label")
-      .data(geoData.features.filter((d: any) => {
-        const studentProvinceName = mapProvinceNameToStudentData(d.properties.name)
-        const stats = provinceStats.get(studentProvinceName)
-        return stats && stats.count > 0
-      }))
-      .enter()
-      .append("text")
-      .attr("class", "province-name-label")
-      .attr("x", (d: any) => path.centroid(d)[0])
-      .attr("y", (d: any) => path.centroid(d)[1] + 15)
-      .attr("text-anchor", "middle")
-      .attr("font-size", "9px")
-      .attr("font-weight", "500")
-      .attr("fill", "#666666")
-      .text((d: any) => {
-        let name = d.properties.name
-        return name.replace(/省|市|自治区|维吾尔|壮族|回族|特别行政区/g, '')
-      })
-      .style("pointer-events", "none")
-      .style("text-shadow", "1px 1px 1px rgba(255,255,255,0.8)")
-      .style("opacity", 0.8)
 
     // 创建图例组
     const legend = svg.append("g")
@@ -549,7 +502,7 @@ const drawMap = async () => {
         .attr("width", 12)
         .attr("height", 12)
         .attr("fill", item.color)
-        .attr("stroke", "#ffffff")
+        .attr("stroke", "#cccccc")
         .attr("stroke-width", 1)
         .attr("rx", 2)
 
@@ -787,22 +740,20 @@ const drawCityMarkers = () => {
         searchKeyword.value = cityData.coord.name
       })
 
-    // 城市名称标签
-    if (currentZoomLevel.value > 2) {
-      cityMarkersGroup.append("text")
-        .attr("class", "city-label")
-        .attr("x", x)
-        .attr("y", y + 20)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "10px")
-        .attr("font-weight", "500")
-        .attr("fill", "#333333")
-        .attr("stroke", "#ffffff")
-        .attr("stroke-width", 2)
-        .attr("paint-order", "stroke")
-        .style("pointer-events", "none")
-        .text(cityData.coord.name.replace("市", ""))
-    }
+    // 城市名称标签 - 始终显示
+    cityMarkersGroup.append("text")
+      .attr("class", "city-label")
+      .attr("x", x)
+      .attr("y", y + 20)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "10px")
+      .attr("font-weight", "500")
+      .attr("fill", "#333333")
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 2)
+      .attr("paint-order", "stroke")
+      .style("pointer-events", "none")
+      .text(cityData.coord.name.replace("市", ""))
   })
 }
 
@@ -859,7 +810,7 @@ const highlightProvince = (provinceName: string) => {
       .duration(300)
       .attr('stroke', (d: any) => {
         const studentProvinceName = mapProvinceNameToStudentData(d.properties.name)
-        return studentProvinceName === provinceName ? '#ff5722' : '#ffffff'
+        return studentProvinceName === provinceName ? '#ff5722' : '#cccccc'
       })
       .attr('stroke-width', (d: any) => {
         const studentProvinceName = mapProvinceNameToStudentData(d.properties.name)
@@ -876,7 +827,7 @@ const highlightProvince = (provinceName: string) => {
         svg.selectAll('.province')
           .transition()
           .duration(500)
-          .attr('stroke', '#ffffff')
+          .attr('stroke', '#cccccc')
           .attr('stroke-width', 1.5)
           .style('filter', 'none')
       }
@@ -995,17 +946,9 @@ onUnmounted(() => {
   transition: opacity 0.3s ease;
 }
 
-:deep(.student-count-label) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  user-select: none;
-  pointer-events: none;
-}
 
-:deep(.province-name-label) {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  user-select: none;
-  pointer-events: none;
-}
+
+
 
 :deep(.legend-group) {
   pointer-events: none;
